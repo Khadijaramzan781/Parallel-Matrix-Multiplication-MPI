@@ -1,0 +1,43 @@
+🚀 Parallel Matrix Multiplication Performance Analysis
+Block Checkerboard Decomposition vs. Cannon's Algorithm
+
+📌 Project Overview
+This research-based project evaluates the performance and scalability of dense matrix multiplication (100 \times 100) using the Message Passing Interface (MPI). The study compares two sophisticated distributed memory algorithms to quantify the trade-offs between computational speed and communication overhead in a multi-core environment.
+📂 Repository Structure
+ * src/: Contains the source code for both implementations (matrix_checkerboard.c and matrix_cannon.c).
+ * docs/: Includes the full technical report (Parallel_Matrix_Multiplication_Report.pdf).
+ * assets/: Screenshots of execution tables and performance visualizations.
+📊 Experimental Results
+The experiments were conducted on a Quad-Core system using MS-MPI with process configurations ranging from 1 to 16.
+1. Execution Time (Seconds)
+|Matrix Size| Processes  | Block Checkerboard | Cannon's Algorithm |
+|-----------|------------|--------------------|--------------------|
+| 100 x 100 | 1 (Serial) | 1.2119s            | 1.52829s           |
+| 100 x 100 | 4 (Peak)   | 0.6857s            | 0.862134s          |
+| 100 x 100 | 16         | 0.6924s            | 0.995532s          |
+
+2. Efficiency & Speedup Summary
+| Metric       | 4 Processes (Optimal) | 16 Processes (Saturated) |
+|--------------|-----------------------|--------------------------|
+| Peak Speedup | 1.77x                 | 1.75x                    |
+| Efficiency   | 44.25%                | ~10%                     |
+|
+🧠 Technical Deep-Dive: Why These Results?
+1. Hardware Constraint (The Quad-Core Limit)
+Since the testing environment was a Quad-Core machine, the performance peaked exactly at n=4 processes. Beyond this, the system lacked physical cores to handle additional MPI processes, leading to context-switching overhead that prevented further speedup.
+
+2. Amdahl’s Law & Scalability Saturation
+For a small matrix size (100 \times 100), the computational workload was insufficient to justify higher parallelism. The results provide a practical demonstration of Amdahl’s Law: the speedup is limited by the sequential component (communication).
+
+3. Communication-Bound vs. Computation-Bound
+As the number of processors increased, the sub-matrix size assigned to each core became too small. The time spent on MPI communication (scattering, shifting, and gathering data) exceeded the time spent on actual math. This shifted the system from being computation-bound to communication-bound.
+
+4. Algorithm Trade-offs
+Block Checkerboard slightly outperformed Cannon's Algorithm in this specific scenario. Cannon's requires complex initial alignment (skewing) and circular shifts. At this small scale, these extra communication steps introduced an overhead that outweighed the benefits of its theoretically optimal design.
+
+🛠 Tech Stack
+ * Language: C
+ * Library: MS-MPI (Microsoft Message Passing Interface)
+ * Environment: Windows-based Parallel Computing
+ * Concepts: Distributed Memory Parallelism, Scalability Analysis, Systolic Arrays
+This project was completed as part of the Parallel and Distributed Computing course at SMI University.
